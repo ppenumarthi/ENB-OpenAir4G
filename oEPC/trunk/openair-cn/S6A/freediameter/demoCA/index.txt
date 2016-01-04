@@ -1,0 +1,1 @@
+V	160519161721Z		01	unknown	/C=FR/ST=PACA/O=Eurecom/OU=CM/CN=ubuntu.pft
