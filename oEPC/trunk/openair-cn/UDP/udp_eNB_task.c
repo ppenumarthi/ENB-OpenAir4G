@@ -172,7 +172,7 @@ int udp_eNB_create_socket(int port, char *ip_addr, task_id_t task_id)
         sin.sin_addr.s_addr = inet_addr(ip_addr);
     }
 
-    // NFVEPC hack
+    // NFVEPC project specific modification
     int optval = 1;
     setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval);
 

@@ -57,7 +57,7 @@
 #   include "gtpv1u_eNB_task.h"
 # endif
 
-/*Added by Phani for generqating sgi traffic 
+/*Added by nfvepc for generqating sgi traffic 
 //#include <tasks_def.h> */
 //#include "../COMMON/gtpv1_u_messages_def.h"  
 
@@ -97,8 +97,8 @@ typedef enum { false, true } bool;
 char mmeip_address[20] = "10.1.1.51";
 
 
-char firstFile[30]="/home/phanik/firstFile.txt";
-char secondFile[30]="/home/phanik/secondFile.txt";
+char firstFile[30]="/home/nfvepc/firstFile.txt";
+char secondFile[30]="/home/nfvepc/secondFile.txt";
 
 int execNum = 0;
 /*--------------------------------------------------------------------*/
@@ -107,9 +107,9 @@ int a = 1;
 
 static void set_execution_number()
 {
-	//system("ps -ef | grep start_enb_and_ue.bash | wc -l > /home/phanik/bs_exec_number.txt");
-	system("ps -ef | grep oaisim | grep gdb | wc -l > /home/phanik/bs_exec_number.txt");
-	FILE* f = fopen("/home/phanik/bs_exec_number.txt", "r");
+	//system("ps -ef | grep start_enb_and_ue.bash | wc -l > /home/nfvepc/bs_exec_number.txt");
+	system("ps -ef | grep oaisim | grep gdb | wc -l > /home/nfvepc/bs_exec_number.txt");
+	FILE* f = fopen("/home/nfvepc/bs_exec_number.txt", "r");
 	int value = (fgetc(f) - 48);
 	fclose(f);
 	execNum = value;
@@ -264,7 +264,7 @@ static void send_msg_added()
 	//if( send(sock , message , strlen(message) , 0) < 0)
 	int count =0;
 
-	FILE* f1 = fopen("/home/phanik/increase_traffic_rate.txt", "r");
+	FILE* f1 = fopen("/home/nfvepc/increase_traffic_rate.txt", "r");
 	int value = (fgetc(f1) - 48);
 	fclose(f1);
 	
@@ -526,7 +526,7 @@ static uint32_t eNB_app_register(uint32_t enb_id_start, uint32_t enb_id_end, con
                 strncpy (s1ap_register_eNB->mme_ip_address[mme_id].ipv6_address,
                          enb_properties->properties[enb_id]->mme_ip_address[mme_id].ipv6_address,
                          sizeof(s1ap_register_eNB->mme_ip_address[0].ipv6_address));
-		//NFVEPC hack
+		//NFVEPC project specific modification
                 strncpy (mmeip_address, //s1ap_register_eNB->mme_ip_address[0].ipv4_address,
                          enb_properties->properties[enb_id]->mme_ip_address[mme_id].ipv4_address,
                          20); 
@@ -550,7 +550,7 @@ static uint32_t eNB_app_register(uint32_t enb_id_start, uint32_t enb_id_end, con
 # endif
 #endif
 
-/* Additions by Phani starts */
+/* Additions by nfvepc starts */
 void *generate_sgi_traffic(void *args_p)
 {
     LOG_I(ENB_APP, "Entered into the generate_sgi_traffic function\n");
@@ -611,7 +611,7 @@ void *generate_sgi_traffic(void *args_p)
     //itti_exit_task ();
     return NULL;
 }
-/* Additions by Phani ends */
+/* Additions by nfvepc ends */
 
 /*------------------------------------------------------------------------------*/
 void *eNB_app_task(void *args_p)

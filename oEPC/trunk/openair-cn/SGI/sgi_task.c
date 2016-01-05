@@ -72,7 +72,7 @@ static pthread_t fw_2_sgi_task_thread;
 
 
 //-----------------------------------------------------------------------------
-//Phani's hack
+//nfvepc's project specific modification
 //-----------------------------------------------------------------------------
 static pthread_t listen_task_thread;
 //static pthread_t read_task_thread[MAX_BS_AT_EPC];
@@ -301,7 +301,7 @@ static int sgi_update_endpoint_request(sgi_data_t *sgi_dataP, SGIUpdateEndpointR
 }
 
 
-//Phani's hack
+//nfvepc's project specific modification
 //-----------------------------------------------------------------------------
 
 static void 
@@ -557,10 +557,10 @@ static void listen_on_server1()
 	listen(sockfd,10);
 	clilen = sizeof(cli_addr);
 	while(1) {
-		// latest hack --- newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+		// latest project specific modification --- newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 		newsockfd[clientNum] = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 		if (newsockfd[clientNum] < 0) {
-		// latest hack --if (newsockfd < 0) {
+		// latest project specific modification --if (newsockfd < 0) {
 			SGI_IF_ERROR("Error on accept  \n");
 		}
 		clientNum++;
