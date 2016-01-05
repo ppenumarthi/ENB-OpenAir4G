@@ -90,12 +90,12 @@ extern unsigned char NB_eNB_INST;
 #define SGW_IP_ADDRESS "192.168.1.2" 
 
 typedef enum { false, true } bool;
-	static int sock;
-	static struct sockaddr_in server;
-	static bool connected = false;
+static int sock;
+static struct sockaddr_in server;
+static bool connected = false;
+
 //char mmeip_address[20] = "192.168.27.135";
 char mmeip_address[20] = "10.1.1.51";
-
 
 char firstFile[30]="/home/nfvepc/firstFile.txt";
 char secondFile[30]="/home/nfvepc/secondFile.txt";
@@ -115,65 +115,6 @@ static void set_execution_number()
 	execNum = value;
 }
 
-
-static void create_tunnel(int i)
-{
-	if(a != 1) 
-		return;
-       	LOG_I(ENB_APP, "In create_tunnel function\n");
-	//char *SGW_IP_ADDRESS = "192.168.1.2";
-	MessageDef *msg_p           = NULL;
-
-        //gtpv1u_enb_tunnel_data_req_t *gtpv1u_tunnel_data_req_p;
-        gtpv1u_enb_create_tunnel_req_t *create_tunnel_req_pP;
-
-        msg_p = itti_alloc_new_message(TASK_ENB_APP, GTPV1U_ENB_CREATE_TUNNEL_REQ);
-        //msg_p = itti_alloc_new_message(TASK_ENB_APP, UDP_DATA_IND);
-
-	msg_p->ittiMsgHeader.messageId = GTPV1U_ENB_CREATE_TUNNEL_REQ; //UDP_DATA_IND;
-        msg_p->ittiMsgHeader.originTaskId = TASK_ENB_APP;
-        msg_p->ittiMsgHeader.destinationTaskId = TASK_GTPV1_U;
-        msg_p->ittiMsgHeader.ittiMsgSize= 42;
-        
-
-        create_tunnel_req_pP = &msg_p->ittiMsg.Gtpv1uCreateTunnelReq;
-	create_tunnel_req_pP->num_tunnels = 2;
-        create_tunnel_req_pP->ue_index = 1;
-
-	//create_tunnel_req_pP->sgw_addr[i].buffer = { ntohl(SGW_IP_ADDRESS), ntohl(SGW_IP_ADDRESS) >> 8, ntohl(SGW_IP_ADDRESS) >> 16, ntohl(SGW_IP_ADDRESS) >> 24 };
-//	create_tunnel_req_pP->sgw_addr[i].buffer =  (uint8 *)SGW_IP_ADDRESS);
-	/*create_tunnel_req_pP->sgw_addr[i].buffer[0] =  htonl(SGW_IP_ADDRESS);
-	create_tunnel_req_pP->sgw_addr[i].buffer[1] =  htonl(SGW_IP_ADDRESS) >> 8;
-	create_tunnel_req_pP->sgw_addr[i].buffer[2] =  htonl(SGW_IP_ADDRESS) >> 16;
-	create_tunnel_req_pP->sgw_addr[i].buffer[3] =  htonl(SGW_IP_ADDRESS) >> 24; */
-
-	char arr[] = "192.168.1.2"; 
-	sscanf(arr, "%hu.%hu.%hu.%hu", &create_tunnel_req_pP->sgw_addr[i].buffer[0], &create_tunnel_req_pP->sgw_addr[i].buffer[1], &create_tunnel_req_pP->sgw_addr[i].buffer[2], &create_tunnel_req_pP->sgw_addr[i].buffer[3]);
-       	LOG_I(ENB_APP, "create_tunnel_req_pP->sgw_addr[i].buffer[0]: %d \n",create_tunnel_req_pP->sgw_addr[i].buffer[0]);
-       	LOG_I(ENB_APP, "create_tunnel_req_pP->sgw_addr[i].buffer[1]: %d \n",create_tunnel_req_pP->sgw_addr[i].buffer[1]);
-       	LOG_I(ENB_APP, "create_tunnel_req_pP->sgw_addr[i].buffer[2]: %d \n",create_tunnel_req_pP->sgw_addr[i].buffer[2]);
-       	LOG_I(ENB_APP, "create_tunnel_req_pP->sgw_addr[i].buffer[3]: %d \n",create_tunnel_req_pP->sgw_addr[i].buffer[3]);
-
-	//char arr[] = "192.168.1.2"; 
-	//sscanf(arr, "%hu.%hu.%hu.%hu", &create_tunnel_req_pP->sgw_addr[i].buffer[0], &create_tunnel_req_pP->sgw_addr[i].buffer[1], &create_tunnel_req_pP->sgw_addr[i].buffer[2], &create_tunnel_req_pP->sgw_addr[i].buffer[3]);
-
-/*	memcpy(create_tunnel_req_pP->sgw_addr[i].buffer,
-                     "192.168.1.2",
-                      sizeof (in_addr_t)); */
-	//create_tunnel_req_pP->sgw_addr[i].length = 8  * sizeof (in_addr_t); 
-	create_tunnel_req_pP->sgw_addr[i].length = 8 * 4; // NFVEPC Project Reportedly, this value is not being set correctly only when given in multiples of 16. Hence, a fi exists in gtpv1u_enb.c to keep this value as 32 since we plan to use IPv4 only.
-	//create_tunnel_req_pP->sgw_addr[i].length = strlen(arr); -- currently setting a constant: ff:ff:ff:ff -- ffffffff. Hence 8
-	//create_tunnel_req_pP->sgw_addr[i].length = 8; -- should be in bits; so  should be 8*4 = 32
-	//create_tunnel_req_pP->sgw_addr[i].length = 32; //looks liked . is also included in string
-	//create_tunnel_req_pP->sgw_addr[i].length = 56; 
-	//create_tunnel_req_pP->sgw_addr[i].length = 128; 
-
-       	LOG_I(ENB_APP, "creating itti message to TASK_GTPV1U\n");
-	itti_send_msg_to_task(TASK_GTPV1_U, INSTANCE_DEFAULT, msg_p);//TASK_FW_IP =3;;; TASK_GTPV1U=2 or 11
-	a = 100;
-}
-
-//int create_tunnel_sample_variable =0;
 static void connect_to_send_msg()
 {
 	//Create socket
@@ -184,7 +125,6 @@ static void connect_to_send_msg()
 	}
 	LOG_I(ENB_APP,"Server Socket created");
      
-	//server.sin_addr.s_addr = inet_addr("130.245.144.31");
 	//server.sin_addr.s_addr = inet_addr("10.1.1.51");
 	server.sin_addr.s_addr = inet_addr(mmeip_address);
 	server.sin_family = AF_INET;
@@ -231,39 +171,31 @@ static void send_msg_added()
 	int packet_sizeP = sizeof("testing for gtpv1 data in tunneled packets");
 
 	gtpv1u_enb_tunnel_data_req_t *gtpv1u_tunnel_data_req_p;
-
-        msg_p = itti_alloc_new_message(TASK_ENB_APP, GTPV1U_ENB_TUNNEL_DATA_REQ);
+    msg_p = itti_alloc_new_message(TASK_ENB_APP, GTPV1U_ENB_TUNNEL_DATA_REQ);
 
 	msg_p->ittiMsgHeader.messageId = GTPV1U_ENB_TUNNEL_DATA_REQ;
-        msg_p->ittiMsgHeader.originTaskId = TASK_ENB_APP;
-        msg_p->ittiMsgHeader.destinationTaskId = TASK_GTPV1_U;
-        msg_p->ittiMsgHeader.ittiMsgSize = packet_sizeP;
+    msg_p->ittiMsgHeader.originTaskId = TASK_ENB_APP;
+    msg_p->ittiMsgHeader.destinationTaskId = TASK_GTPV1_U;
+    msg_p->ittiMsgHeader.ittiMsgSize = packet_sizeP;
 
-        message_payload_p = itti_malloc(TASK_ENB_APP,TASK_GTPV1_U, packet_sizeP);
-        memcpy(message_payload_p, data_pP, packet_sizeP);
-        gtpv1u_tunnel_data_req_p = &msg_p->ittiMsg.Gtpv1uTunnelDataReq;
+    message_payload_p = itti_malloc(TASK_ENB_APP,TASK_GTPV1_U, packet_sizeP);
+    memcpy(message_payload_p, data_pP, packet_sizeP);
+    gtpv1u_tunnel_data_req_p = &msg_p->ittiMsg.Gtpv1uTunnelDataReq;
 	gtpv1u_tunnel_data_req_p->rab_id = 1;
-        gtpv1u_tunnel_data_req_p->ue_index = 1;
-        gtpv1u_tunnel_data_req_p->length = packet_sizeP;
-        gtpv1u_tunnel_data_req_p->buffer = message_payload_p;
-        LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->rabid: %d\n",msg_p->ittiMsg.Gtpv1uTunnelDataReq.rab_id);	
-        LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->ue_index: %d\n",msg_p->ittiMsg.Gtpv1uTunnelDataReq.ue_index);	
-        LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->length: %d",msg_p->ittiMsg.Gtpv1uTunnelDataReq.length);	
-        LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->buffer: %s\n",msg_p->ittiMsg.Gtpv1uTunnelDataReq.buffer);	
+    gtpv1u_tunnel_data_req_p->ue_index = 1;
+    gtpv1u_tunnel_data_req_p->length = packet_sizeP;
+    gtpv1u_tunnel_data_req_p->buffer = message_payload_p;
+    LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->rabid: %d\n",msg_p->ittiMsg.Gtpv1uTunnelDataReq.rab_id);	
+    LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->ue_index: %d\n",msg_p->ittiMsg.Gtpv1uTunnelDataReq.ue_index);	
+    LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->length: %d",msg_p->ittiMsg.Gtpv1uTunnelDataReq.length);	
+    LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->buffer: %s\n",msg_p->ittiMsg.Gtpv1uTunnelDataReq.buffer);	
 
 	char message[1000];
-/*
-********* NFVEPC Project *************
-*/	
-
 	struct timeval tim;
 	gettimeofday(&tim, NULL);
-	double t1=tim.tv_sec+(tim.tv_usec/1000000.0);              
-	//n = write(sockfd,(void *)msg_p,sizeof(MessageDef)); 		
-	//n = write(sockfd,(void *)msg_p,sizeof(MessageDef)); 		
-	//if( send(sock , message , strlen(message) , 0) < 0)
+	double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+	
 	int count =0;
-
 	FILE* f1 = fopen("/home/nfvepc/increase_traffic_rate.txt", "r");
 	int value = (fgetc(f1) - 48);
 	fclose(f1);
@@ -278,81 +210,10 @@ static void send_msg_added()
 		LOG_I(ENB_APP, "SEND %.6lf %s %d %ld\n", t1, "GTPV1U_ENB_TUNNEL_DATA_REQ", sizeof(*msg_p), ++countNum );
 		count++;
 	}
-        //close(sock);
-	
+    //close(sock);
+
 	return;
 }
-
-
-
-static void send_msg_added1()
-{
-	long countNum =0;
-	struct sockaddr_in serverAddr;
-	int sockfd, portno, n;
-	socklen_t addr_size;
-	portno = 2152;
-
-	//sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	serverAddr.sin_family = AF_INET;
- 	/* Set port number, using htons function to use proper byte order */
-	serverAddr.sin_port = htons(portno);                                        
-	/* Set IP address to localhost */                                           
-	serverAddr.sin_addr.s_addr = inet_addr("130.245.144.31");                   
-	/* Set all bits of the padding field to 0 */                           
-	memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
-	/*---- Connect the socket to the server using the address struct ----*/
-	addr_size = sizeof serverAddr;
-
-	if (connect(sockfd,(struct sockaddr *)&serverAddr,addr_size) < 0)
-        	LOG_I(ENB_APP, "ERROR connecting to server socket\n");
-	
-	MessageDef *msg_p           = NULL;
-	unsigned char *message_payload_p = NULL; 
-	message_payload_p = (char *)malloc(50); 
-	unsigned char data_pP[50] = "testing for gtpv1 data in tunneled packets";  
-	int packet_sizeP = sizeof("testing for gtpv1 data in tunneled packets");
-
-	gtpv1u_enb_tunnel_data_req_t *gtpv1u_tunnel_data_req_p;
-
-        msg_p = itti_alloc_new_message(TASK_ENB_APP, GTPV1U_ENB_TUNNEL_DATA_REQ);
-
-	msg_p->ittiMsgHeader.messageId = GTPV1U_ENB_TUNNEL_DATA_REQ;
-        msg_p->ittiMsgHeader.originTaskId = TASK_ENB_APP;
-        msg_p->ittiMsgHeader.destinationTaskId = TASK_GTPV1_U;
-        msg_p->ittiMsgHeader.ittiMsgSize = packet_sizeP;
-
-        message_payload_p = itti_malloc(TASK_ENB_APP,TASK_GTPV1_U, packet_sizeP);
-        memcpy(message_payload_p, data_pP, packet_sizeP);
-        gtpv1u_tunnel_data_req_p = &msg_p->ittiMsg.Gtpv1uTunnelDataReq;
-	gtpv1u_tunnel_data_req_p->rab_id = 1;
-        gtpv1u_tunnel_data_req_p->ue_index = 1;
-        gtpv1u_tunnel_data_req_p->length = packet_sizeP;
-        gtpv1u_tunnel_data_req_p->buffer = message_payload_p;
-        LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->rabid: %d\n",msg_p->ittiMsg.Gtpv1uTunnelDataReq.rab_id);	
-        LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->ue_index: %d\n",msg_p->ittiMsg.Gtpv1uTunnelDataReq.ue_index);	
-        LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->length: %d",msg_p->ittiMsg.Gtpv1uTunnelDataReq.length);	
-        LOG_I(ENB_APP, "gtpv1u_tunnel_data_req_p->buffer: %s\n",msg_p->ittiMsg.Gtpv1uTunnelDataReq.buffer);	
-
-/*
-********* NFVEPC Project *************
-*/	
-
-	struct timeval tim;
-	gettimeofday(&tim, NULL);
-	double t1=tim.tv_sec+(tim.tv_usec/1000000.0);              
-	LOG_I(ENB_APP, "SEND %.6lf %s %d %ld\n", t1, "GTPV1U_ENB_TUNNEL_DATA_REQ", sizeof(*msg_p), ++countNum );
-	n = write(sockfd,(void *)msg_p,sizeof(MessageDef)); 		
-	if (n < 0)
-		LOG_I(ENB_APP, "ERROR writing to socket\n");	
-	
-	return;
-}
-/*--------------------------------------------------------------------*/
-
-
-
 
 /*------------------------------------------------------------------------------*/
 static void configure_phy(uint32_t enb_id, const Enb_properties_array_t *enb_properties)
@@ -550,69 +411,6 @@ static uint32_t eNB_app_register(uint32_t enb_id_start, uint32_t enb_id_end, con
 # endif
 #endif
 
-/* Additions by nfvepc starts */
-void *generate_sgi_traffic(void *args_p)
-{
-    LOG_I(ENB_APP, "Entered into the generate_sgi_traffic function\n");
-    long statistic_timer_id;
-    //yield();
-    //pthread_yield();
-    //usleep(1);
-    //LOG_I(ENB_APP, "Exited the sleep\n");
-    //sched_yield(); //--provides executable, but does not yield processor to next threads.
-/*    while(1) 
-    {
-	MessageDef *msg_p           = NULL;
-	msg_p = itti_alloc_new_message(TASK_ENB_APP, GTPV1U_TUNNEL_DATA_IND);
-	itti_send_msg_to_task (TASK_FW_IP, INSTANCE_DEFAULT, msg_p);
-        result = itti_free (ITTI_MSG_ORIGIN_ID(msg_p), msg_p);
-    } */
-
-  /* sigset_t mask;
-	sigset_t orig_mask;
-	struct timespec timeout;
- 
-	sigemptyset (&mask);
-//	sigaddset (&mask, SIGCHLD);
- 
-	if (sigprocmask(SIG_BLOCK, &mask, &orig_mask) < 0) {
-		perror ("sigprocmask");
-		return 1;
-	}
- 
- 
-	timeout.tv_sec = 5;
-	timeout.tv_nsec = 0;
- 
-	sigtimedwait(&mask, NULL, &timeout);
-    LOG_I(ENB_APP, "Done with sigtimedwait\n");  */
-       
-/*    while(1) 
-    {
-	MessageDef *msg_p           = NULL;
-	msg_p = itti_alloc_new_message(TASK_ENB_APP, GTPV1U_TUNNEL_DATA_IND);
-	itti_send_msg_to_task (TASK_GTPV1_U, INSTANCE_DEFAULT, msg_p);
-        result = itti_free (ITTI_MSG_ORIGIN_ID(msg_p), msg_p);
-    } */
-
-
-     /* Request for periodic timer */
-    statistic_timer_id = 0x12345678910;
-        //statistic_timer_id = 10;
-    //if (timer_setup(5, 10, TASK_ENB_APP, INSTANCE_DEFAULT,TIMER_PERIODIC, NULL, &statistic_timer_id) < 0)
-    //if (timer_setup(0, 50, TASK_ENB_APP, INSTANCE_DEFAULT,TIMER_PERIODIC, NULL, &statistic_timer_id) < 0)
-    if (timer_setup(1, 150, TASK_ENB_APP, INSTANCE_DEFAULT,TIMER_PERIODIC, NULL, &statistic_timer_id) < 0)
-    {
-        LOG_I(ENB_APP,"Failed to request new timer for statistics with %ds "
-        "of periocidity\n", statistic_timer_id);
-        statistic_timer_id = 0;
-    }
-
-    //itti_exit_task ();
-    return NULL;
-}
-/* Additions by nfvepc ends */
-
 /*------------------------------------------------------------------------------*/
 void *eNB_app_task(void *args_p)
 {
@@ -648,11 +446,10 @@ void *eNB_app_task(void *args_p)
                  "Last eNB index is greater or equal to maximum eNB index (%d/%d)!",
                  enb_id_end, NUMBER_OF_eNB_MAX);
 
-//New timer created to generate traffic at BS periodically -- NFVEPC Project
+    //New timer created to generate traffic at BS periodically -- NFVEPC Project
     long statistic_timer_id = 0x12345678910;
     //if (timer_setup(5, 5, TASK_ENB_APP, INSTANCE_DEFAULT,TIMER_PERIODIC, NULL, &statistic_timer_id) < 0)
     if (timer_setup(0, 10000, TASK_ENB_APP, INSTANCE_DEFAULT,TIMER_PERIODIC, NULL, &statistic_timer_id) < 0)
-    //if (timer_setup(0, 1250, TASK_ENB_APP, INSTANCE_DEFAULT,TIMER_PERIODIC, NULL, &statistic_timer_id) < 0)
     {
       LOG_I(ENB_APP,"Failed to request new timer for statistics with %ds of periocidity\n", statistic_timer_id);
       statistic_timer_id = 0;
@@ -687,45 +484,28 @@ void *eNB_app_task(void *args_p)
         // Wait for a message
         itti_receive_msg (TASK_ENB_APP, &msg_p);
 
-/*
- *  * Only for statistics 
- *   * NFVEPC Project
- *    */
-  /*time_t rawtime;
-  struct tm * timeinfo;
+        /* Only for statistics NFVEPC Project */
+        struct timeval tim;
+        gettimeofday(&tim, NULL);
+        double t1=tim.tv_sec+(tim.tv_usec/1000000.0);              
 
-  time ( &rawtime );
-  timeinfo = localtime ( &rawtime );*/
-struct timeval tim;
-gettimeofday(&tim, NULL);
-double t1=tim.tv_sec+(tim.tv_usec/1000000.0);              
-
-/*  LOG_I(ENB_APP, "-------------------------------\n" );
-  LOG_I(ENB_APP, "Current local time and date: %.6lf \n", t1 );
-  LOG_I(ENB_APP, "Received message as %d with size as: %d\n", ITTI_MSG_ID(msg_p), sizeof( *msg_p) );
-  LOG_I(ENB_APP, "TIMER_HAS_EXPIRED: %d, S1AP_REGISTER_ENB_CNF: %d,\n", TIMER_HAS_EXPIRED, S1AP_REGISTER_ENB_CNF); */
-  if(ITTI_MSG_ID(msg_p) == 11)
-  LOG_I(ENB_APP, "ABCD %.6lf %s %d", t1, "TIMER_HAS_EXPIRED", sizeof(*msg_p) );
-  else if(ITTI_MSG_ID(msg_p) == 102)
-  LOG_I(ENB_APP, "ABCD %.6lf %s %d", t1, "S1AP_REGISTER_ENB_CNF", sizeof(*msg_p) );
-//  LOG_I(ENB_APP, "-------------------------------\n");
-/*
- *  * Done with statistics
- *   */
-
+        if(ITTI_MSG_ID(msg_p) == 11)
+          LOG_I(ENB_APP, "ABCD %.6lf %s %d", t1, "TIMER_HAS_EXPIRED", sizeof(*msg_p) );
+        else if(ITTI_MSG_ID(msg_p) == 102)
+          LOG_I(ENB_APP, "ABCD %.6lf %s %d", t1, "S1AP_REGISTER_ENB_CNF", sizeof(*msg_p) );
+        /* Only for statistics NFVEPC Project */
+        
         msg_name = ITTI_MSG_NAME (msg_p);
         instance = ITTI_MSG_INSTANCE (msg_p);
 
         switch (ITTI_MSG_ID(msg_p))
         {
             case TERMINATE_MESSAGE:
-		//send_msg_added();
                 itti_exit_task ();
                 break;
 
             case MESSAGE_TEST:
                 LOG_I(ENB_APP, "Received %s\n", ITTI_MSG_NAME(msg_p));	
-		//send_msg_added();
                 break;
 
 # if defined(ENABLE_USE_MME)
@@ -733,7 +513,6 @@ double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
                 LOG_I(ENB_APP, "[eNB %d] Received %s: associated MME %d\n", instance, msg_name,
                       S1AP_REGISTER_ENB_CNF(msg_p).nb_mme);
 
-		//send_msg_added();
                 DevAssert(register_enb_pending > 0);
                 register_enb_pending--;
 
@@ -787,7 +566,6 @@ double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
                 break;
 
             case S1AP_DEREGISTERED_ENB_IND:
-		//send_msg_added();
                 LOG_W(ENB_APP, "[eNB %d] Received %s: associated MME %d\n", instance, msg_name,
                       S1AP_DEREGISTERED_ENB_IND(msg_p).nb_mme);
 
@@ -796,7 +574,7 @@ double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 
             case TIMER_HAS_EXPIRED:
                 LOG_I(ENB_APP, " Received %s: timer_id %d\n", msg_name, TIMER_HAS_EXPIRED(msg_p).timer_id);
-		send_msg_added();
+        		send_msg_added(); //NFVEPC addition
                 if (TIMER_HAS_EXPIRED (msg_p).timer_id == enb_register_retry_timer_id)
                 {
                     /* Restart the registration process */
@@ -807,7 +585,6 @@ double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 # endif
 
             default:
-		//send_msg_added();
                 LOG_E(ENB_APP, "Received unexpected message %s\n", msg_name);
                 break;
         }
