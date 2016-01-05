@@ -8,7 +8,7 @@ Example: ~/BS-openAir4G/oEPC/trunk$ bash oaienv.bash
 ------------------------------------------------------------------------------------
 COMPILATION + INSTALLATION
 ------------------------------------------------------------------------------------
-Use build_oai.bash script at ~/BS-openAir4G/oEPC/trunk/targets fodler to compile and install oaisim. Verify at ~/BS-openAir4G/oEPC/trunk/targets/SIMU/USER if the executable is generated.
+Use build_oai.bash script at ~/BS-openAir4G/oEPC/trunk/targets folder to compile and install oaisim. Verify at ~/BS-openAir4G/oEPC/trunk/targets/SIMU/USER if the executable is generated.
 Example: ~/BS-openAir4G/oEPC/trunk/targets$ bash build_oai.bash -l ENB -t OAISIM -w NONE
 
 ------------------------------------------------------------------------------------
